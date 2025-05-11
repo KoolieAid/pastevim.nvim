@@ -1,18 +1,26 @@
 local http = require("plenary.curl")
 
 local M = {
-    public = 0,
-    use_filename = true,
-    only_code = false,
+    public = 1,
+    include_filename = true,
+    code_only = false,
 }
 
 local secrets = {
     api_key = nil,
 }
 
+local function check_key()
+    if secrets.api_key == nil then
+        vim.notify("Pastevim: API Key was not provided.", vim.log.levels.ERROR);
+        return false
+    end
+    return true
+end
+
 M.setup = function(config)
     if config.api_key == nil then
-        error("No API key provided")
+        vim.notify("Pastevim: API Key was not provided.", vim.log.levels.ERROR);
         return
     end
 
@@ -20,20 +28,35 @@ M.setup = function(config)
 
     M.public = config.public or M.public
 
-    M.use_filename = config.use_filename or M.use_filename
-    M.only_code = config.only_code or M.only_code
+    M.include_filename = config.include_filename or M.include_filename
+    M.code_only = config.code_only or M.code_only
 end
 
 local function copy_to_clipboard(content)
-    local response = content.body
+    if content.status ~= 200 then
+        vim.notify("There was a problem processing the request. Response: " .. content.body, vim.log.levels.ERROR);
+        return
+    end
+    local raw_body = content.body
+
+    local pastebin_link
+    if M.code_only then
+        -- TODO: Convert to code
+        pastebin_link = nil
+    else
+        pastebin_link = raw_body
+    end
 
     vim.schedule(function()
-        vim.fn.setreg("+", response)
-        print("Copied to clipboard!")
+        vim.fn.setreg("+", pastebin_link)
+        print("Copied to clipboard! " .. pastebin_link)
     end)
 end
 
 M.upload = function(content)
+    if not check_key() then
+        return
+    end
     http.post({
         url = "https://pastebin.com/api/api_post.php",
         headers = {
