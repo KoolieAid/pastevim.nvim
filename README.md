@@ -12,9 +12,9 @@ This is my first time making a Neovim plugin, suggestions or criticisms apprecia
 
 ### Things to do / Missing
 - Copying lines while in visual mode
-~~- Including the file name while uploading~~
-~~- Copy only the pastebin code~~
-- Expiry date
+- ~~Including the file name while uploading~~
+- ~~Copy only the pastebin code~~
+- ~~Expiry date~~
 
 # Installation
 ## Lazy.nvim
@@ -28,9 +28,21 @@ Defaults are currently set
         public = 1, -- 0=public 1=unlisted 2=private
         include_filename = true, -- Whether to include the filename when uploading to Pastebin
         code_only = false,  -- Whether to copy only the Pastebin code to clipboard instead of full link
-        expiry = "N" -- Not used yet
+        expiry = "N" -- Default expiry of the pastes.
     }
 }
+
+Expiry options:
+These are the only options, it is not possible to fine-tune the options due to API limitations
+- N - Never
+- 10M - 10 Minutes
+- 1H = 1 Hour
+- 1D = 1 Day
+- 1W = 1 Week
+- 2W = 2 Weeks
+- 1M = 1 Month
+- 6M = 6 Months
+- 1Y = 1 Year
 
 ```
 ### OR

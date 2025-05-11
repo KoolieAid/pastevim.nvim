@@ -79,6 +79,7 @@ M.upload = function(content, filename)
             api_paste_code = content,
             api_paste_name = filename,
             api_paste_format = file_type,
+            api_paste_expire_date = M.expiry,
         },
         callback = copy_to_clipboard,
     })
