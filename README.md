@@ -12,7 +12,7 @@ This is my first time making a Neovim plugin, suggestions or criticisms apprecia
 
 ### Things to do / Missing
 - Copying lines while in visual mode
-- Including the file name while uploading
+~~- Including the file name while uploading~~
 ~~- Copy only the pastebin code~~
 - Expiry date
 

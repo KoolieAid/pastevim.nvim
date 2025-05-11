@@ -29,7 +29,9 @@ M.setup = function(config)
 
     M.public = config.public or M.public
 
-    M.include_filename = config.include_filename or M.include_filename
+    if config.include_filename == false then
+        M.include_filename = false
+    end
     M.code_only = config.code_only or M.code_only
     M.expiry = config.expiry or M.code_only
 end
@@ -54,10 +56,17 @@ local function copy_to_clipboard(content)
     end)
 end
 
-M.upload = function(content)
+M.upload = function(content, filename)
     if not check_key() then
         return
     end
+
+    local file_type = vim.fn.fnamemodify(filename, ":e")
+
+    if not M.include_filename then
+        filename = nil
+    end
+
     http.post({
         url = "https://pastebin.com/api/api_post.php",
         headers = {
@@ -68,6 +77,8 @@ M.upload = function(content)
             api_option = "paste",
             api_paste_public = M.public,
             api_paste_code = content,
+            api_paste_name = filename,
+            api_paste_format = file_type,
         },
         callback = copy_to_clipboard,
     })
@@ -77,7 +88,10 @@ M.upload_current_buffer = function()
     local buf = vim.api.nvim_get_current_buf()
     local data = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
     data = table.concat(data, "\n")
-    M.upload(data)
+
+    local filename_path = vim.api.nvim_buf_get_name(buf)
+    local filename = vim.fn.fnamemodify(filename_path, ":t")
+    M.upload(data, filename)
 end
 
 vim.api.nvim_create_user_command("Pastevim", function(cmd)
