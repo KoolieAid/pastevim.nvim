@@ -85,9 +85,8 @@ M.upload = function(content, filename)
     })
 end
 
-M.upload_current_buffer = function()
-    local buf = vim.api.nvim_get_current_buf()
-    local data = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+M.upload_range = function(buf, range)
+    local data = vim.api.nvim_buf_get_lines(buf, range.line1 - 1, range.line2, false)
     data = table.concat(data, "\n")
 
     local filename_path = vim.api.nvim_buf_get_name(buf)
@@ -95,8 +94,24 @@ M.upload_current_buffer = function()
     M.upload(data, filename)
 end
 
+M.upload_whole_buffer = function(buf)
+    M.upload_range(buf, { line1 = 0, line2 = -1, range = 0 })
+end
+
 vim.api.nvim_create_user_command("Pastevim", function(cmd)
-    require("pastevim").upload_current_buffer()
-end, {})
+    local range = {
+        line1 = cmd.line1,
+        line2 = cmd.line2,
+        range = cmd.range,
+    }
+
+    local buf = vim.api.nvim_get_current_buf()
+    if range == 0 then
+        M.upload_whole_buffer(buf)
+        return
+    end
+
+    M.upload_range(buf, range)
+end, { range = true })
 
 return M
