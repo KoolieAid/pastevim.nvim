@@ -64,6 +64,7 @@ I would recommend using this so you can put the API key in a different place and
 ```
 # Usage
 Type `:Pastevim`. It will copy the current buffer and then put the pastebin link into your system clipboard
+You can also use visual ranges like selecting a block of text then typing `:Pastevim`. It should look like `:'<,'>Pastevim`.
 
 ## Functions
 Use `require("pastevim")` in your code
