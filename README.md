@@ -13,28 +13,31 @@ This is my first time making a Neovim plugin, suggestions or criticisms apprecia
 ### Things to do / Missing
 - Copying lines while in visual mode
 - Including the file name while uploading
-- Copy only the pastebin code
+~~- Copy only the pastebin code~~
+- Expiry date
 
 # Installation
 ## Lazy.nvim
 Defaults are currently set
 ```lua
 {
-    "",
+    "KoolieAid/pastevim.nvim",
     dependencies = "nvim-lua/plenary.nvim",
     opts = {
         api_key = "YOUR KEY HERE",
         public = 1, -- 0=public 1=unlisted 2=private
         include_filename = true, -- Whether to include the filename when uploading to Pastebin
         code_only = false,  -- Whether to copy only the Pastebin code to clipboard instead of full link
+        expiry = "N" -- Not used yet
     }
 }
 
 ```
 ### OR
+I would recommend using this so you can put the API key in a different place and add it programmatically
 ```lua
 {
-    "",
+    "KoolieAid/pastevim.nvim",
     dependencies = "nvim-lua/plenary.nvim",
     config = function()
         require("pastevim").setup({
@@ -42,10 +45,15 @@ Defaults are currently set
             public = 1,
             include_filename = true,
             code_only = false,
+            expiry = "N"
         })
     end
 }
 ```
+# Usage
+Type `:Pastevim`. It will copy the current buffer and then put the pastebin link into your system clipboard
 
 ## Functions
-TBA
+Use `require("pastevim")` in your code
+1. `upload(string)` - Uploads the string provided and returns the link
+2. `upload_current_buffer()` - Uploads the current buffer

@@ -4,6 +4,7 @@ local M = {
     public = 1,
     include_filename = true,
     code_only = false,
+    expiry = "N",
 }
 
 local secrets = {
@@ -30,6 +31,7 @@ M.setup = function(config)
 
     M.include_filename = config.include_filename or M.include_filename
     M.code_only = config.code_only or M.code_only
+    M.expiry = config.expiry or M.code_only
 end
 
 local function copy_to_clipboard(content)
@@ -39,10 +41,9 @@ local function copy_to_clipboard(content)
     end
     local raw_body = content.body
 
-    local pastebin_link
+    local pastebin_link = nil
     if M.code_only then
-        -- TODO: Convert to code
-        pastebin_link = nil
+        pastebin_link = raw_body:match("https://pastebin.com/(.+)")
     else
         pastebin_link = raw_body
     end
