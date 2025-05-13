@@ -38,7 +38,9 @@ end
 
 local function copy_to_clipboard(content)
     if content.status ~= 200 then
-        vim.notify("There was a problem processing the request. Response: " .. content.body, vim.log.levels.ERROR);
+        vim.schedule(function()
+            vim.notify("There was a problem processing the request. Response: " .. content.body, vim.log.levels.ERROR);
+        end)
         return
     end
     local raw_body = content.body
@@ -81,7 +83,11 @@ M.upload = function(content, filename)
             api_paste_format = file_type,
             api_paste_expire_date = M.expiry,
         },
-        callback = copy_to_clipboard,
+        callback = function(content)
+            vim.schedule(function()
+                copy_to_clipboard(content)
+            end)
+        end,
     })
 end
 
@@ -95,7 +101,7 @@ M.upload_range = function(buf, range)
 end
 
 M.upload_whole_buffer = function(buf)
-    M.upload_range(buf, { line1 = 0, line2 = -1, range = 0 })
+    M.upload_range(buf, { line1 = 1, line2 = -1, range = 0 })
 end
 
 vim.api.nvim_create_user_command("Pastevim", function(cmd)
@@ -106,7 +112,7 @@ vim.api.nvim_create_user_command("Pastevim", function(cmd)
     }
 
     local buf = vim.api.nvim_get_current_buf()
-    if range == 0 then
+    if range.range == 0 then
         M.upload_whole_buffer(buf)
         return
     end
