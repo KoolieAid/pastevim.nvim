@@ -36,7 +36,7 @@ M.setup = function(config)
     M.expiry = config.expiry or M.code_only
 end
 
-local function copy_to_clipboard(content)
+local function copy_to_clipboard(content, filename)
     if content.status ~= 200 then
         vim.schedule(function()
             vim.notify("There was a problem processing the request. Response: " .. content.body, vim.log.levels.ERROR);
@@ -52,9 +52,13 @@ local function copy_to_clipboard(content)
         pastebin_link = raw_body
     end
 
+    if string.len(filename) == 0 then
+        filename = "the currennt buffer"
+    end
+
     vim.schedule(function()
         vim.fn.setreg("+", pastebin_link)
-        print("Copied to clipboard! " .. pastebin_link)
+        print("Contents of " .. filename .. " copied to clipboard! " .. pastebin_link)
     end)
 end
 
@@ -83,9 +87,9 @@ M.upload = function(content, filename)
             api_paste_format = file_type,
             api_paste_expire_date = M.expiry,
         },
-        callback = function(content)
+        callback = function(response)
             vim.schedule(function()
-                copy_to_clipboard(content)
+                copy_to_clipboard(response, filename)
             end)
         end,
     })
